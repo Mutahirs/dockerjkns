@@ -1,0 +1,38 @@
+#ec1-instance
+resource "aws_instance" "red0" {
+  ami           = "ami-04fa00d4c63e32376"
+  count         = 0
+  instance_type = "t1.micro"
+  security_groups = [aws_security_group.red_sg.id]
+  key_name = "virg"
+  subnet_id = "${element(aws_subnet.public.*.id,count.index)}"
+  user_data= <<-EOF
+                #!/bin/bash
+                sudo yum install httpd -y
+                sudo echo "this is payments app" > /var/www/html/index.html
+                sudo systemctl start httpd
+                sudo systemctl enable httpd
+EOF
+  tags = {
+    Name = "red0-ec2-${count.index}"
+  }
+}
+
+resource "aws_instance" "red" {
+  ami           = "ami-04fa00d4c63e32376"
+  count         = 0
+  instance_type = "t1.micro"
+  security_groups = [aws_security_group.red_sg.id]
+  key_name = "virg"
+  subnet_id = "${element(aws_subnet.public.*.id,count.index)}"
+  user_data= <<-EOF
+                #!/bin/bash
+                sudo yum install httpd -y
+                sudo echo "this is orders app" > /var/www/html/index.html
+                sudo systemctl start httpd
+                sudo systemctl enable httpd
+EOF
+  tags = {
+    Name = "red-ec1-${count.index}"
+  }
+}
